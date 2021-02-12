@@ -1,0 +1,46 @@
+service: my-express-applciation
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline #needs to be the last in the list
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-west-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:eu-west-1:694064703852:table/film-test
+
+
+functions:
+  app:
+    handler: index.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+  getFilm:
+    handler: index.handler
+    events:
+      - http: 'POST /films/{proxy+}'
+  addFilm:
+    handler: index.handler
+    events:
+      - http: 'POST /add-film'
+  updateFilm:
+    handler: index.handler
+    events:
+      - http: 'POST /update-film/{proxy+}'
+  deleteFilm:
+    handler: index.handler
+    events:
+      - http: 'POST /delete-film/{proxy+}'
